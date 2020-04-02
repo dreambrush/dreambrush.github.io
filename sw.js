@@ -11,8 +11,8 @@
  * See https://goo.gl/2aRDsh
  */
 
-importScripts("workbox-v3.6.3/workbox-sw.js");
-workbox.setConfig({modulePathPrefix: "workbox-v3.6.3"});
+importScripts("workbox-v3.6.1/workbox-sw.js");
+workbox.setConfig({modulePathPrefix: "workbox-v3.6.1"});
 
 workbox.core.setCacheNameDetails({prefix: "gatsby-plugin-offline"});
 
@@ -26,91 +26,78 @@ workbox.clientsClaim();
  */
 self.__precacheManifest = [
   {
-    "url": "webpack-runtime-75dfff0a736ce8c6d43a.js"
+    "url": "webpack-runtime-9dc9983ab88bb2ef1275.js"
   },
   {
-    "url": "styles.37455fce74ec829141da.css"
+    "url": "app.d29374f7b96c831a5402.css"
   },
   {
-    "url": "styles-fbb98101f1a3312cf582.js"
+    "url": "app-ac2e4ce026f5444f238b.js"
   },
   {
-    "url": "commons-106250b64ca130d1d0c0.js"
+    "url": "component---node-modules-gatsby-plugin-offline-app-shell-js-352b2a4209f8cccc8312.js"
   },
   {
-    "url": "app-42941f7298eab36fb24d.js"
-  },
-  {
-    "url": "component---node-modules-gatsby-plugin-offline-app-shell-js-ebda79b2f242b4f85f83.js"
+    "url": "index.html",
+    "revision": "1ca5445697c3c548ee47fb2902977190"
   },
   {
     "url": "offline-plugin-app-shell-fallback/index.html",
-    "revision": "7bf4f3e8d9d0d007168c17cbf76b5bd7"
+    "revision": "3e3063bbdec6d0a0c64dcfaab04e3a5f"
   },
   {
-    "url": "page-data/offline-plugin-app-shell-fallback/page-data.json",
-    "revision": "c355c8040c47a63bfb3360e4b7cb6553"
+    "url": "component---src-pages-index-js-d5146b8f444fd21311cc.js"
   },
   {
-    "url": "page-data/app-data.json",
-    "revision": "4ad063bb20b176a9b3af3383a809dbd8"
+    "url": "0-29d6f7794e84a205392b.js"
+  },
+  {
+    "url": "static/d/541/path---index-6a9-uZOH229x9mcMAsfqxR8Kt2hcMg.json",
+    "revision": "13a01068cce3f07558990c1f4bda98f0"
+  },
+  {
+    "url": "component---src-pages-404-js-a585c7a4efb0da60d9f3.js"
+  },
+  {
+    "url": "static/d/164/path---404-html-516-62a-NZuapzHg3X9TaN1iIixfv1W23E.json",
+    "revision": "c2508676a2f33ea9f1f0bf472997f9a0"
+  },
+  {
+    "url": "static/d/520/path---offline-plugin-app-shell-fallback-a-30-c5a-NZuapzHg3X9TaN1iIixfv1W23E.json",
+    "revision": "c2508676a2f33ea9f1f0bf472997f9a0"
   },
   {
     "url": "manifest.webmanifest",
-    "revision": "e171fd4ab22458d3d5ed5cc39d99f564"
+    "revision": "164a1eb91443d79fe484861090d2925c"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerRoute(/(\.js$|\.css$|static\/)/, workbox.strategies.cacheFirst(), 'GET');
-workbox.routing.registerRoute(/^https?:.*\page-data\/.*\/page-data\.json/, workbox.strategies.networkFirst(), 'GET');
-workbox.routing.registerRoute(/^https?:.*\.(png|jpg|jpeg|webp|svg|gif|tiff|js|woff|woff2|json|css)$/, workbox.strategies.staleWhileRevalidate(), 'GET');
-workbox.routing.registerRoute(/^https?:\/\/fonts\.googleapis\.com\/css/, workbox.strategies.staleWhileRevalidate(), 'GET');
+workbox.routing.registerNavigationRoute("/dreambrush.github.io/offline-plugin-app-shell-fallback/index.html", {
+  whitelist: [/^[^?]*([^.?]{5}|\.html)(\?.*)?$/],
+  blacklist: [/\?(.+&)?no-cache=1$/],
+});
 
-/* global importScripts, workbox, idbKeyval */
+workbox.routing.registerRoute(/\.(?:png|jpg|jpeg|webp|svg|gif|tiff|js|woff|woff2|json|css)$/, workbox.strategies.staleWhileRevalidate(), 'GET');
+workbox.routing.registerRoute(/^https:/, workbox.strategies.networkFirst(), 'GET');
+"use strict";
 
-importScripts(`idb-keyval-iife.min.js`)
+/* global workbox */
+self.addEventListener("message", function (event) {
+  var api = event.data.api;
 
-const { NavigationRoute } = workbox.routing
-
-const navigationRoute = new NavigationRoute(async ({ event }) => {
-  let { pathname } = new URL(event.request.url)
-  pathname = pathname.replace(new RegExp(`^/dreambrush.github.io`), ``)
-
-  // Check for resources + the app bundle
-  // The latter may not exist if the SW is updating to a new version
-  const resources = await idbKeyval.get(`resources:${pathname}`)
-  if (!resources || !(await caches.match(`/dreambrush.github.io/app-42941f7298eab36fb24d.js`))) {
-    return await fetch(event.request)
+  if (api === "gatsby-runtime-cache") {
+    var resources = event.data.resources;
+    var cacheName = workbox.core.cacheNames.runtime;
+    event.waitUntil(caches.open(cacheName).then(function (cache) {
+      return Promise.all(resources.map(function (resource) {
+        return cache.add(resource).catch(function (e) {
+          // ignore TypeErrors - these are usually due to
+          // external resources which don't allow CORS
+          if (!(e instanceof TypeError)) throw e;
+        });
+      }));
+    }));
   }
-
-  for (const resource of resources) {
-    // As soon as we detect a failed resource, fetch the entire page from
-    // network - that way we won't risk being in an inconsistent state with
-    // some parts of the page failing.
-    if (!(await caches.match(resource))) {
-      return await fetch(event.request)
-    }
-  }
-
-  const offlineShell = `/dreambrush.github.io/offline-plugin-app-shell-fallback/index.html`
-  return await caches.match(offlineShell)
-})
-
-workbox.routing.registerRoute(navigationRoute)
-
-const messageApi = {
-  setPathResources(event, { path, resources }) {
-    event.waitUntil(idbKeyval.set(`resources:${path}`, resources))
-  },
-
-  clearPathResources(event) {
-    event.waitUntil(idbKeyval.clear())
-  },
-}
-
-self.addEventListener(`message`, event => {
-  const { gatsbyApi } = event.data
-  if (gatsbyApi) messageApi[gatsbyApi](event, event.data)
-})
+});

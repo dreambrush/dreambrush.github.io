@@ -26,10 +26,10 @@ workbox.clientsClaim();
  */
 self.__precacheManifest = [
   {
-    "url": "webpack-runtime-ab6c61888df903c225df.js"
+    "url": "webpack-runtime-75dfff0a736ce8c6d43a.js"
   },
   {
-    "url": "styles.436bce8218b3e97a05d6.css"
+    "url": "styles.37455fce74ec829141da.css"
   },
   {
     "url": "styles-fbb98101f1a3312cf582.js"
@@ -38,18 +38,26 @@ self.__precacheManifest = [
     "url": "commons-106250b64ca130d1d0c0.js"
   },
   {
-    "url": "app-eefb8f014fbf48bd6a46.js"
+    "url": "app-42941f7298eab36fb24d.js"
   },
   {
     "url": "component---node-modules-gatsby-plugin-offline-app-shell-js-ebda79b2f242b4f85f83.js"
   },
   {
     "url": "offline-plugin-app-shell-fallback/index.html",
-    "revision": "b20fc42f85ef160f00da911a063a51d0"
+    "revision": "7bf4f3e8d9d0d007168c17cbf76b5bd7"
+  },
+  {
+    "url": "page-data/offline-plugin-app-shell-fallback/page-data.json",
+    "revision": "c355c8040c47a63bfb3360e4b7cb6553"
+  },
+  {
+    "url": "page-data/app-data.json",
+    "revision": "4ad063bb20b176a9b3af3383a809dbd8"
   },
   {
     "url": "manifest.webmanifest",
-    "revision": "164a1eb91443d79fe484861090d2925c"
+    "revision": "e171fd4ab22458d3d5ed5cc39d99f564"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
@@ -68,12 +76,12 @@ const { NavigationRoute } = workbox.routing
 
 const navigationRoute = new NavigationRoute(async ({ event }) => {
   let { pathname } = new URL(event.request.url)
-  pathname = pathname.replace(new RegExp(`^`), ``)
+  pathname = pathname.replace(new RegExp(`^/dreambrush.github.io`), ``)
 
   // Check for resources + the app bundle
   // The latter may not exist if the SW is updating to a new version
   const resources = await idbKeyval.get(`resources:${pathname}`)
-  if (!resources || !(await caches.match(`/app-eefb8f014fbf48bd6a46.js`))) {
+  if (!resources || !(await caches.match(`/dreambrush.github.io/app-42941f7298eab36fb24d.js`))) {
     return await fetch(event.request)
   }
 
@@ -86,7 +94,7 @@ const navigationRoute = new NavigationRoute(async ({ event }) => {
     }
   }
 
-  const offlineShell = `/offline-plugin-app-shell-fallback/index.html`
+  const offlineShell = `/dreambrush.github.io/offline-plugin-app-shell-fallback/index.html`
   return await caches.match(offlineShell)
 })
 
